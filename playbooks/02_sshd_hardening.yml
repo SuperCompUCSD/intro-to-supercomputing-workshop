@@ -14,33 +14,30 @@
         owner: root
         group: root
         mode: "0600"
-      notify: Restart sshd
 
-  # Don't worry about everything below
-  handlers:
-    - name: Restart sshd
-      block:
-        - name: Validate sshd config syntax
-          ansible.builtin.command: "/usr/sbin/sshd -t -f {{ sshd_config_path }}"
-          changed_when: false
+    # Don't worry about everything below here
+    - name: Validate sshd config syntax
+      ansible.builtin.command: "/usr/sbin/sshd -t -f {{ sshd_config_path }}"
+      changed_when: false
 
-        # Prefer reload if possible; fall back to hard restart.
-        - name: Reload sshd if running (HUP)
-          ansible.builtin.shell: |
-            set -e
-            pid="$(pidof sshd || true)"
-            if [ -n "$pid" ]; then
-              kill -HUP "$pid"
-            else
-              /usr/sbin/sshd
-            fi
-          args:
-            executable: /bin/bash
+    - name: Reload sshd if running
+      ansible.builtin.shell: |
+        set -e
+        pid="$(pidof sshd || true)"
+        if [ -n "$pid" ]; then
+          kill -HUP "$pid"
+        else
+          /usr/sbin/sshd
+        fi
+      args:
+        executable: /bin/bash
+      register: reload_result
+      ignore_errors: true
 
-      rescue:
-        - name: Hard restart sshd (fallback)
-          ansible.builtin.shell: |
-            pkill sshd || true
-            /usr/sbin/sshd
-          args:
-            executable: /bin/bash
+    - name: Hard restart sshd (fallback)
+      ansible.builtin.shell: |
+        pkill sshd || true
+        /usr/sbin/sshd
+      args:
+        executable: /bin/bash
+      when: reload_result.failed
