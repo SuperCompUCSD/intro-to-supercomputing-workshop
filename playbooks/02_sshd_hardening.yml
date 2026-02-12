@@ -9,7 +9,7 @@
   tasks:
     - name: Deploy hardened sshd_config
       ansible.builtin.copy:
-        src: files/sshd_config.hardened
+        src: files/sshd_config
         dest: "{{ sshd_config_path }}"
         owner: root
         group: root
