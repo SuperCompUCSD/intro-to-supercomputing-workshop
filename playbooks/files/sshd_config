@@ -5,4 +5,4 @@ Port 22
 PermitRootLogin no
 PubkeyAuthentication yes
 PasswordAuthentication no
-# TODO: as an extra safety measure, can you figure out how to restrict login to your user?
+# TODO: as an extra safety measure, can you figure out how to ONLY allow logins to your user?
