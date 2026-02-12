@@ -1,8 +1,16 @@
-Include /etc/ssh/sshd_config.d/*.conf
+Include /etc/ssh/sshd_config.d/\*.conf
 AllowAgentForwarding yes
 
 Port 22
-PermitRootLogin no
-PubkeyAuthentication yes
-PasswordAuthentication no
-# TODO: as an extra safety measure, can you figure out how to ONLY allow logins to your user?
+
+# TODOs:
+
+# - disable root login
+
+# - disable password authentication
+
+# - enable public key authentication
+
+# - (optional) ONLY allow logins to your user
+
+# This page MIGHT be helpful - https://man7.org/linux/man-pages/man5/sshd_config.5.html

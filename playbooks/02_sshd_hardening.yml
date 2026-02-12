@@ -8,9 +8,9 @@
 
   tasks:
     - name: Deploy hardened sshd_config
-      ansible.builtin.copy:
-        src: files/sshd_config
-        dest: "{{ sshd_config_path }}"
+      <FILL IN>: # TODO: fill in the module we should call here to copy our sshd_config to sshd_config_path
+        # TODO: add other necessary arguments to we need to sepcify here
+        # DO NOT REMOVE the three fields below, or you might lock yourself out
         owner: root
         group: root
         mode: "0600"
