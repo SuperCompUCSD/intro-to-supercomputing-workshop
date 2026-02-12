@@ -1,0 +1,5 @@
+# TODO: fill in desired username
+username: "<username>"
+
+# TODO: paste in SSH key
+pubkey: "<PASTE_KEY_HERE>"
