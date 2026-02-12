@@ -1,0 +1,46 @@
+- name: SSH hardening
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    sshd_config_path: /etc/ssh/sshd_config # this is the file that's used to configure the SSH server on a linux machine
+
+  tasks:
+    - name: Deploy hardened sshd_config
+      ansible.builtin.copy:
+        src: files/sshd_config.hardened
+        dest: "{{ sshd_config_path }}"
+        owner: root
+        group: root
+        mode: "0600"
+      notify: Restart sshd
+
+  # Don't worry about everything below
+  handlers:
+    - name: Restart sshd
+      block:
+        - name: Validate sshd config syntax
+          ansible.builtin.command: "/usr/sbin/sshd -t -f {{ sshd_config_path }}"
+          changed_when: false
+
+        # Prefer reload if possible; fall back to hard restart.
+        - name: Reload sshd if running (HUP)
+          ansible.builtin.shell: |
+            set -e
+            pid="$(pidof sshd || true)"
+            if [ -n "$pid" ]; then
+              kill -HUP "$pid"
+            else
+              /usr/sbin/sshd
+            fi
+          args:
+            executable: /bin/bash
+
+      rescue:
+        - name: Hard restart sshd (fallback)
+          ansible.builtin.shell: |
+            pkill sshd || true
+            /usr/sbin/sshd
+          args:
+            executable: /bin/bash

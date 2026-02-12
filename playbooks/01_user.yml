@@ -7,7 +7,9 @@
     - name: Create user
       ansible.builtin.user:
         name: "{{ username }}"
-        groups: wheel # being in the wheel group ensures this user has the ability to run priviledged commands
+        groups:
+          - wheel # being in the wheel group ensures this user has the ability to run priviledged commands
+          - workshop # a group we created for the convenience of this workshop
         append: true # append the group to the user's current list of groups, as opposed to replacing it
         create_home: true # create the user's home directory at /home/{{username}}
 
