@@ -22,10 +22,11 @@
 
     - name: Reload sshd if running
       ansible.builtin.shell: |
-        set -e
-        pid="$(pidof sshd || true)"
-        if [ -n "$pid" ]; then
-          kill -HUP "$pid"
+        set -euo pipefail
+        pids="$(pidof sshd || true)"
+        if [ -n "$pids" ]; then
+          # pidof may return multiple PIDs; send HUP to all of them
+          kill -HUP $pids
         else
           /usr/sbin/sshd
         fi
@@ -33,11 +34,3 @@
         executable: /bin/bash
       register: reload_result
       ignore_errors: true
-
-    - name: Hard restart sshd (fallback)
-      ansible.builtin.shell: |
-        pkill sshd || true
-        /usr/sbin/sshd
-      args:
-        executable: /bin/bash
-      when: reload_result.failed
